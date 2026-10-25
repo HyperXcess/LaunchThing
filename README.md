@@ -6,7 +6,7 @@
 
 Press the dial to open LaunchThing, turn it to browse all enabled web apps, and press again to launch the selection. It shows app names, neighboring apps, and your position in the list, with wraparound in both directions. Backend-only apps are omitted.
 
-Opening an app closes the optional Control Thing shade; it does not accidentally open that shade. The small button closes the launcher and can continue to open your configured settings view.
+Opening an app closes the optional ControlThing shade; it does not accidentally open that shade. The small button closes the launcher and can continue to open your configured settings view.
 
 LaunchThing is a **client extension**, not an app to import with Upload App. It replaces the client’s wheel selector component while retaining DeskThing’s existing stores and open-app actions. It does not replace firmware, read Spotify tokens, or add a backend process.
 
@@ -55,7 +55,7 @@ npm test
 npm run package
 ```
 
-The release source ZIP contains the component, installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalThing and Control Thing are optional.
+The release source ZIP contains the component, installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalThing and ControlThing are optional.
 
 ## Limitations
 
