@@ -8,13 +8,23 @@ Press the dial to open LaunchThing, turn it to browse all enabled web apps, and 
 
 Opening an app closes the optional ControlThing shade; it does not accidentally open that shade. The small button closes the launcher and can continue to open your configured settings view.
 
-LaunchThing is a **client extension**, not an app to import with Upload App. It replaces the client’s wheel selector component while retaining DeskThing’s existing stores and open-app actions. It does not replace firmware, read Spotify tokens, or add a backend process.
+LaunchThing is a **client extension with an installable DeskThing helper app**. The helper stages the wheel-selector component through DeskThing’s declared post-install mechanism. It retains the existing stores and open-app actions; it does not replace firmware or read Spotify tokens. A minimal utility backend reports the activation instructions and is omitted from the launcher’s app list.
+
+## Install from the DeskThing store
+
+1. Open **Downloads → Add Client/App** in the left sidebar.
+2. Add this repository’s GitHub URL as an **App** repository.
+3. Refresh/pull the repository, select the app, download it, and initialize it.
+4. The declared post-install step backs up and stages the client integration. It does not change account credentials, calendar settings, or firmware. It supports the DeskThing 0.11.2 modern/legacy client bundles and stops before writing if either layout is unsupported.
+5. Open **Clients → Push staged client**, then **Restart Chromium on the Device** to activate the client UI changes.
+
+The release includes a separate **`latest.json`** with DeskThing metadata, a version-pinned runtime download URL, embedded icon, size, and SHA-512 checksum. The ZIP named with the lowercase internal app ID is the installable runtime. The capitalized `LaunchThing-source-…zip` archive is for development, not installation.
 
 ## Compatibility
 
 Tested on DeskThing Server **0.11.17**, client **0.11.2**, and a Spotify Car Thing running Thing Labs firmware. The client extension targets the exact 0.11.2 bundle layout; the installer refuses unknown layouts. DeskThing/client updates can replace the extension, so reapply it after a compatible update. No firmware flashing is included.
 
-## Client extension installation (Mac)
+## Manual client extension installation (Mac, optional alternative)
 
 Install Node.js 20 or newer. Quit DeskThing while changing its staged client. In this repository, run:
 
@@ -55,11 +65,11 @@ npm test
 npm run package
 ```
 
-The release source ZIP contains the component, installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalThing and ControlThing are optional.
+The release contains `launchthing-v0.2.0.zip` for DeskThing installation, `latest.json` for store discovery, and a source ZIP with the component, manual installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalThing and ControlThing are optional.
 
 ## Limitations
 
-This is an experimental client extension for the tested release, not a generic SDK app. Other client replacements that rewrite the same wheel component may conflict. Only enabled apps with a web interface can be launched.
+This is an experimental client extension for the tested release, distributed through a DeskThing helper app. Other client replacements that rewrite the same wheel component may conflict. Only enabled apps with a web interface can be launched.
 
 ## License and credit
 

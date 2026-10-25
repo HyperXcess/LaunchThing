@@ -1,13 +1,14 @@
 {
   "name": "launchthing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An all-app dial launcher for DeskThing",
   "type": "module",
   "author": "HyperXcess",
   "license": "MIT",
   "scripts": {
-    "test": "node wheel.test.cjs && node --test installer.test.mjs",
-    "package": "node tools/package.mjs"
+    "test": "node build.mjs && node wheel.test.cjs && node --test installer.test.mjs postinstall.test.mjs release.test.mjs",
+    "package": "node tools/package.mjs",
+    "build": "node build.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
@@ -19,5 +20,9 @@
   },
   "bugs": {
     "url": "https://github.com/HyperXcess/LaunchThing/issues"
+  },
+  "dependencies": {
+    "@deskthing/server": "0.11.6",
+    "@deskthing/types": "0.11.6"
   }
 }
