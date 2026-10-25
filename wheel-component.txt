@@ -1,0 +1,22 @@
+()=>{
+ const R=REACT,J=JSX,AS=APPSTORE,BS=BUTTONSTORE,WS=WHEELSTORE,PS=PREFSTORE;
+ const all=AS(s=>s.apps),rotation=WS(s=>s.wheelRotation),close=WS(s=>s.setWheelState),execute=BS(s=>s.executeAction);
+ const apps=R.useMemo(()=>all.filter(app=>app.enabled!==false&&app.manifest?.isWebApp!==false),[all]);
+ const initial=R.useRef(null);
+ if(!initial.current)initial.current={rotation,index:Math.max(0,apps.findIndex(app=>app.name===PS.getState().preferences.currentView.name))};
+ const index=apps.length?((initial.current.index+rotation-initial.current.rotation)%apps.length+apps.length)%apps.length:0;
+ const choose=app=>{window.dispatchEvent(new CustomEvent('hyper-mission',{detail:'hide'}));if(app)execute({id:'open',source:'server',value:app.name,enabled:true});close(false)};
+ R.useEffect(()=>{
+  const handler=e=>{if(e.code==='Enter'||e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();choose(apps[index])}else if(e.code==='Escape'||e.key==='Escape')close(false)};
+  window.addEventListener('keydown',handler,true);return()=>window.removeEventListener('keydown',handler,true);
+ },[index,apps]);
+ return J.jsxs('div',{style:{position:'fixed',right:0,top:0,bottom:0,width:'390px',maxWidth:'90vw',background:'#101214',color:'#fff',zIndex:45,padding:'18px',borderLeft:'1px solid #454545',display:'flex',flexDirection:'column',boxShadow:'-15px 0 35px #0009'},children:[
+  J.jsxs('div',{style:{display:'flex',justifyContent:'space-between',fontSize:'18px',marginBottom:'12px'},children:[J.jsx('span',{children:'LaunchThing'}),J.jsx('span',{children:apps.length?(index+1)+' / '+apps.length:'0 apps'})]}),
+  J.jsx('div',{style:{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',gap:'7px',overflow:'hidden'},children:apps.length?[-2,-1,0,1,2].map(offset=>{
+   if(apps.length<5&&(index+offset<0||index+offset>=apps.length))return null;
+   const i=((index+offset)%apps.length+apps.length)%apps.length,app=apps[i],label=app.manifest&&app.manifest.label||app.name;
+   return J.jsx('button',{onClick:()=>choose(app),style:{background:offset===0?'#f3f4f6':'#202328',color:offset===0?'#101214':'#a8adb5',border:'none',borderRadius:'12px',padding:'13px 16px',minHeight:'52px',textAlign:'left',fontSize:offset===0?'25px':'19px',fontWeight:offset===0?600:400,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'},children:label},offset);
+  }):J.jsx('p',{children:'No enabled apps'})}),
+  J.jsx('div',{style:{fontSize:'14px',color:'#a8adb5',marginTop:'12px'},children:'Turn to browse · Press to open'})
+ ]});
+}

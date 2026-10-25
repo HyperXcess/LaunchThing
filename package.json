@@ -1,0 +1,23 @@
+{
+  "name": "launchthing",
+  "version": "0.1.0",
+  "description": "An all-app dial launcher for DeskThing",
+  "type": "module",
+  "author": "HyperXcess",
+  "license": "MIT",
+  "scripts": {
+    "test": "node wheel.test.cjs && node --test installer.test.mjs",
+    "package": "node tools/package.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  },
+  "homepage": "https://github.com/joesanta/LaunchThing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joesanta/LaunchThing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/joesanta/LaunchThing/issues"
+  }
+}
