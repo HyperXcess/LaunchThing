@@ -12,12 +12,12 @@
   "devDependencies": {
     "esbuild": "0.28.2"
   },
-  "homepage": "https://github.com/joesanta/LaunchThing",
+  "homepage": "https://github.com/HyperXcess/LaunchThing",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joesanta/LaunchThing.git"
+    "url": "https://github.com/HyperXcess/LaunchThing.git"
   },
   "bugs": {
-    "url": "https://github.com/joesanta/LaunchThing/issues"
+    "url": "https://github.com/HyperXcess/LaunchThing/issues"
   }
 }

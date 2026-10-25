@@ -1,6 +1,6 @@
 # LaunchThing
 
-[Download releases](https://github.com/joesanta/LaunchThing/releases) · [Report a problem](https://github.com/joesanta/LaunchThing/issues)
+[Download releases](https://github.com/HyperXcess/LaunchThing/releases) · [Report a problem](https://github.com/HyperXcess/LaunchThing/issues)
 
 **An all-app dial launcher for DeskThing.** By HyperXcess.
 
