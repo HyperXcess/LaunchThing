@@ -1,12 +1,12 @@
 {
   "name": "launchthing",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "An all-app dial launcher for DeskThing",
   "type": "module",
   "author": "HyperXcess",
   "license": "MIT",
   "scripts": {
-    "test": "node build.mjs && node wheel.test.cjs && node --test installer.test.mjs postinstall.test.mjs release.test.mjs",
+    "test": "node build.mjs && node wheel.test.cjs && node --test installer.test.mjs priority.test.mjs postinstall.test.mjs release.test.mjs",
     "package": "node tools/package.mjs",
     "build": "node build.mjs"
   },

@@ -2,9 +2,9 @@
 
 [Download releases](https://github.com/HyperXcess/LaunchThing/releases) · [Report a problem](https://github.com/HyperXcess/LaunchThing/issues)
 
-**An all-app dial launcher for DeskThing.** By HyperXcess.
+**An all-app dial launcher for DeskThing.**
 
-Press the dial to open LaunchThing, turn it to browse all enabled web apps, and press again to launch the selection. It shows app names, neighboring apps, and your position in the list, with wraparound in both directions. Backend-only apps are omitted.
+Press the dial to open LaunchThing, turn it to browse all enabled web apps, and press again to launch the selection. Apps are sorted alphabetically. It shows app names, neighboring apps, and your position in the list, with wraparound in both directions. Backend-only apps are omitted.
 
 Opening an app closes the optional ControlThing shade; it does not accidentally open that shade. The small button closes the launcher and can continue to open your configured settings view.
 
@@ -65,7 +65,7 @@ npm test
 npm run package
 ```
 
-The release contains `launchthing-v0.2.0.zip` for DeskThing installation, `latest.json` for store discovery, and a source ZIP with the component, manual installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalThing and ControlThing are optional.
+The release contains `launchthing-v0.3.0.zip` for DeskThing installation, `latest.json` for store discovery, and a source ZIP with the component, manual installer, tests, and setup guide. No upstream compiled client or personal settings are distributed. Apply the installer to your own compatible DeskThing client. CalendarThing and ControlThing are optional.
 
 ## Limitations
 
@@ -74,3 +74,7 @@ This is an experimental client extension for the tested release, distributed thr
 ## License and credit
 
 MIT. Built on DeskThing Client’s MIT-licensed extension points. See `THIRD_PARTY_NOTICES.md`.
+
+## Input priority
+
+LaunchThing takes focus and captures dial turns and clicks while open. Background iframes are temporarily blocked and restored when it closes. The latest dial position is used when clicking, even before the next render. Native tray auto-opening is suppressed; map the small button’s KeyDown action to `native-switcher` to toggle it. This replaces that button’s former settings shortcut. CalendarThing also respects the overlay-priority message.

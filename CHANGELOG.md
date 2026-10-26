@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 — 2026-10-26
+
+Alphabetical all-app browsing, reliable dial-click selection, launcher input priority, and suppression of accidental native app-tray opening.
+
 ## 0.2.0
 
 - Add DeskThing store discovery via a separate `latest.json` release asset, embedded icon, size, and SHA-512 checksum.

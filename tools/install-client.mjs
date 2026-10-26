@@ -1,3 +1,4 @@
+import {priorityEdits,patchPriority} from './input-priority.mjs';
 import {readFile,writeFile,readdir,mkdir,copyFile} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -12,6 +13,7 @@ let template=await readFile(resolve(project,'wheel-component.txt'),'utf8');for(c
 const {code}=await transform('var REPLACEMENT='+template,{target:'chrome69',minifyWhitespace:true,minifySyntax:true});const expression=code.trim().replace(/^var REPLACEMENT=/,'').replace(/;$/,'');
 const a=source.indexOf(spec.start),b=source.indexOf(spec.end,a);if(a<0||b<0)throw Error('Unsupported client bundle: '+spec.file+' (tested with client 0.11.2 only)');const shade=source.indexOf(','+spec.name+'=',a),stop=shade>=0&&shade<b?shade:b+1;source=source.slice(0,a)+spec.start.split('=')[0]+'='+expression+source.slice(stop);
 
+ source=patchPriority(source,priorityEdits(spec));
  await transform(source,{target:'chrome69',loader:'js'});
  changes.push({path,source,original});
 }

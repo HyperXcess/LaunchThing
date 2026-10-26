@@ -1,22 +1,37 @@
 ()=>{
  const R=REACT,J=JSX,AS=APPSTORE,BS=BUTTONSTORE,WS=WHEELSTORE,PS=PREFSTORE;
  const all=AS(s=>s.apps),rotation=WS(s=>s.wheelRotation),close=WS(s=>s.setWheelState),execute=BS(s=>s.executeAction);
- const apps=R.useMemo(()=>all.filter(app=>app.enabled!==false&&app.manifest?.isWebApp!==false),[all]);
- const initial=R.useRef(null);
+ const apps=R.useMemo(()=>all.filter(app=>app.enabled!==false&&!app.manifest?.tags?.includes('utilityOnly')).sort((a,b)=>String(a.manifest?.label||a.name).localeCompare(String(b.manifest?.label||b.name),'en',{sensitivity:'base',numeric:true})||a.name.localeCompare(b.name)),[all]);
+ const initial=R.useRef(null),root=R.useRef(null);
+ R.useEffect(()=>{if(apps.length)return;let attempts=0;const request=()=>{if(attempts++<5)SOCKETSTORE.getState().send({app:'server',type:'get',request:'initialData'})};request();const timer=setInterval(request,2000);return()=>clearInterval(timer)},[apps.length]);
+ R.useEffect(()=>{
+  window.__launchOverlayOpen=true;window.__launchNativeTrayOpen=false;
+  PS.getState().updatePreferences({appTrayState:'hidden'});
+  window.dispatchEvent(new CustomEvent('hyper-mission',{detail:'hide'}));
+  const frames=Array.from(document.querySelectorAll('iframe')).map(frame=>({frame,pointer:frame.style.pointerEvents,tab:frame.getAttribute('tabindex')}));
+  const notify=(frame,open)=>{try{frame.contentWindow.postMessage({source:'deskthing',type:'overlay-priority',payload:{owner:'launchthing',open}},new URL(frame.src).origin)}catch{}};
+  frames.forEach(({frame})=>{frame.style.pointerEvents='none';frame.setAttribute('tabindex','-1');notify(frame,true)});
+  if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();if(root.current)root.current.focus();
+  return()=>{window.__launchOverlayOpen=false;frames.forEach(({frame,pointer,tab})=>{frame.style.pointerEvents=pointer;if(tab===null)frame.removeAttribute('tabindex');else frame.setAttribute('tabindex',tab);notify(frame,false)})};
+ },[]);
  if(!initial.current)initial.current={rotation,index:Math.max(0,apps.findIndex(app=>app.name===PS.getState().preferences.currentView.name))};
- const index=apps.length?((initial.current.index+rotation-initial.current.rotation)%apps.length+apps.length)%apps.length:0;
+ const indexAt=value=>apps.length?((initial.current.index+value-initial.current.rotation)%apps.length+apps.length)%apps.length:0;
+ const index=indexAt(rotation);
  const choose=app=>{window.dispatchEvent(new CustomEvent('hyper-mission',{detail:'hide'}));if(app)execute({id:'open',source:'server',value:app.name,enabled:true});close(false)};
  R.useEffect(()=>{
-  const handler=e=>{if(e.code==='Enter'||e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();choose(apps[index])}else if(e.code==='Escape'||e.key==='Escape')close(false)};
-  window.addEventListener('keydown',handler,true);return()=>window.removeEventListener('keydown',handler,true);
- },[index,apps]);
- return J.jsxs('div',{style:{position:'fixed',right:0,top:0,bottom:0,width:'390px',maxWidth:'90vw',background:'#101214',color:'#fff',zIndex:45,padding:'18px',borderLeft:'1px solid #454545',display:'flex',flexDirection:'column',boxShadow:'-15px 0 35px #0009'},children:[
-  J.jsxs('div',{style:{display:'flex',justifyContent:'space-between',fontSize:'18px',marginBottom:'12px'},children:[J.jsx('span',{children:'LaunchThing'}),J.jsx('span',{children:apps.length?(index+1)+' / '+apps.length:'0 apps'})]}),
+  const consume=e=>{e.preventDefault();e.stopImmediatePropagation()};
+  const wheel=e=>{consume(e);const delta=Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY;if(delta){const state=WS.getState();state.setWheelRotation(state.wheelRotation+(delta>0?1:-1))}};
+  const handler=e=>{if(e.code==='Enter'||e.key==='Enter'){consume(e);if(!e.repeat)choose(apps[indexAt(WS.getState().wheelRotation)])}else if(e.code==='Escape'||e.key==='Escape'){consume(e);close(false)}};
+  window.addEventListener('wheel',wheel,{capture:true,passive:false});window.addEventListener('keydown',handler,true);
+  return()=>{window.removeEventListener('wheel',wheel,true);window.removeEventListener('keydown',handler,true)};
+ },[apps]);
+ return J.jsx('div',{ref:root,tabIndex:-1,role:'dialog','aria-modal':true,'aria-label':'LaunchThing',onClick:e=>{if(e.target===e.currentTarget)close(false)},style:{position:'fixed',top:0,left:0,right:0,bottom:0,zIndex:80,background:'#0009',outline:'none'},children:J.jsxs('div',{style:{position:'absolute',right:0,top:0,bottom:0,width:'390px',maxWidth:'90vw',background:'#08060e',color:'#fff',zIndex:45,padding:'18px',borderLeft:'1px solid #b782ff',display:'flex',flexDirection:'column',boxShadow:'-15px 0 35px #0009'},children:[
+  J.jsxs('div',{style:{display:'flex',justifyContent:'space-between',fontSize:'18px',marginBottom:'12px'},children:[J.jsx('span',{style:{color:'#27ead5',fontWeight:800,letterSpacing:'2px'},children:'LaunchThing'}),J.jsx('span',{children:apps.length?(index+1)+' / '+apps.length:'0 apps'})]}),
   J.jsx('div',{style:{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',gap:'7px',overflow:'hidden'},children:apps.length?[-2,-1,0,1,2].map(offset=>{
    if(apps.length<5&&(index+offset<0||index+offset>=apps.length))return null;
    const i=((index+offset)%apps.length+apps.length)%apps.length,app=apps[i],label=app.manifest&&app.manifest.label||app.name;
-   return J.jsx('button',{onClick:()=>choose(app),style:{background:offset===0?'#f3f4f6':'#202328',color:offset===0?'#101214':'#a8adb5',border:'none',borderRadius:'12px',padding:'13px 16px',minHeight:'52px',textAlign:'left',fontSize:offset===0?'25px':'19px',fontWeight:offset===0?600:400,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'},children:label},offset);
+   return J.jsx('button',{onClick:()=>choose(app),style:{background:offset===0?'#ff2397':'#241431',color:offset===0?'#ffffff':'#d8bce9',border:'none',borderRadius:'12px',padding:'13px 16px',minHeight:'52px',textAlign:'left',fontSize:offset===0?'25px':'19px',fontWeight:offset===0?600:400,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'},children:label},offset);
   }):J.jsx('p',{children:'No enabled apps'})}),
-  J.jsx('div',{style:{fontSize:'14px',color:'#a8adb5',marginTop:'12px'},children:'Turn to browse · Press to open'})
- ]});
+  J.jsx('div',{style:{fontSize:'14px',color:'#d8bce9',marginTop:'12px'},children:'Turn to browse · Press to open'})
+ ]})});
 }
